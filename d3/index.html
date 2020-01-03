@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>D3 Test</title>
+    <script type="text/javascript" src="d3/d3.js"></script>
+    <style>
+        div.bar {
+            display: inline-block;
+            width: 20px;
+            height: 75px; /* We'll override this later */
+            background-color: teal;
+            margin-right: 2px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="diagram">
+</div>
+
+<script type="text/javascript">
+    var dataset = [ 25, 7, 5, 26, 11, 8, 25, 14, 23, 19, 14, 11, 22, 29, 11, 13, 12, 17, 18, 10, 24, 18, 25, 9, 3 ];
+    d3.select("body")
+        .selectAll("div.diagram")
+        .data(dataset)
+        .enter()
+        .append("div")
+        .attr("class", "bar")
+        .style("height", d => d * 3 + "px")
+</script>
+</body>
+</html>
