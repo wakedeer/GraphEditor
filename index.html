@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Graph Editor version 0.1</title>
-    <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js@3.0/dist/svg.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/2.6.3/svg.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/svg.draggy.js/1.1.1/svg.draggy.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/svg.connectable.js/2.0.1/svg.connectable.min.js"></script>
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/svg.draggy.js/1.1.1/svg.draggy.min.js"></script>
+    <script type="text/javascript" src="plugins/connectable/svg.connectable.js"></script>
 </head>
 <body>
-
 <div>
     <div>
         <input id="state-option" type="radio" name="mode" value="state">
@@ -21,26 +21,68 @@
     </div>
 </div>
 
-<div style="padding: 10px" class="content"></div>
+<div style="padding: 10px" class="content">
+    <svg id="stage"></svg>
+</div>
 <script>
     var counter = 0;
+    var candidateNode = null;
+    var nodes = [];
 
-    var draw = SVG().addTo('.content').size(1500, 500);
+    var svg = SVG('stage').size("100%", 900);
 
-    draw.click(function (evt) {
-        var e = evt.target;
-        var dim = e.getBoundingClientRect();
-        var x = evt.clientX - dim.left;
-        var y = evt.clientY - dim.top;
+    svg.dblclick(function (evt) {
 
-        let circle = draw.circle(100)
+        let e = evt.target;
+        let dim = e.getBoundingClientRect();
+        let x = evt.clientX - dim.left;
+        let y = evt.clientY - dim.top;
+
+        let currentNodeNumber = ++counter;
+
+        //var group = svg.group().draggy();
+
+        let circle = svg.circle(70)
             .center(x, y)
-            .attr({fill: '#ffb09a'});
+            .fill("#C2185B")
+            .attr("node-id", currentNodeNumber)
+            .opacity(0.8)
+            .draggy();
 
-        let text = draw.plain(++counter)
-            .center(x, y)
-            .font({fill: '#000000', family: 'Inconsolata'});
+        // group.plain(currentNodeNumber)
+        //     .center(x, y)
+        //     .font({fill: '#000000', family: 'Inconsolata'});
+
+        circle.click(function (evt) {
+            if (candidateNode && candidateNode !== this) {
+                //console.log(candidateNode)
+                //console.log(this)
+                var conn1 = candidateNode.connectable({
+                    marker: 'default',
+                    targetAttach: 'perifery',
+                    sourceAttach: 'perifery',
+                    color: '#2a88c9'
+                }, this);
+
+                //this.fill({color: '#C2185B'});
+                //candidateNode.fill({color: '#C2185B'});
+                candidateNode = null;
+            } else {
+                candidateNode = this;
+                //candidateNode.fill({color: '#b4ff47'})
+                //console.log(candidateNode)
+            }
+        });
+
+        // nodes.push(
+        //     {
+        //         nodeId: currentNodeNumber,
+        //         data: node
+        //     }
+        // );
+        // console.log(nodes);
     });
+
 
 </script>
 </body>
