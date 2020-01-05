@@ -2,88 +2,81 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Graph Editor version 0.1</title>
+    <title>Graph Editor beta 0.1</title>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/2.6.3/svg.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script type="text/javascript"
             src="https://cdnjs.cloudflare.com/ajax/libs/svg.draggy.js/1.1.1/svg.draggy.min.js"></script>
     <script type="text/javascript" src="plugins/connectable/svg.connectable.js"></script>
 </head>
+<style>
+    .content {
+        border: 1px solid black;
+        padding: 10px;
+    }
+</style>
 <body>
-<div>
-    <div>
-        <input id="state-option" type="radio" name="mode" value="state">
-        <label for="state-option">Состояние</label>
-    </div>
-    <div>
-        <input id="work-option" type="radio" name="mode" value="word">
-        <label for="work-option">Работа</label>
-    </div>
-</div>
+<h2>Graph Editor beta 0.1</h2>
+<!--<div>-->
+<!--    <div>-->
+<!--        <input id="state-option" type="radio" name="mode" value="state">-->
+<!--        <label for="state-option">Состояние</label>-->
+<!--    </div>-->
+<!--    <div>-->
+<!--        <input id="work-option" type="radio" name="mode" value="word">-->
+<!--        <label for="work-option">Работа</label>-->
+<!--    </div>-->
+<!--</div>-->
 
-<div style="padding: 10px" class="content">
+<div class="content">
     <svg id="stage"></svg>
 </div>
 <script>
     var counter = 0;
+
     var candidateNode = null;
     var nodes = [];
 
+    const nodeColor = '#C2185B';
+
     var svg = SVG('stage').size("100%", 900);
-
     svg.dblclick(function (evt) {
-
         let e = evt.target;
         let dim = e.getBoundingClientRect();
         let x = evt.clientX - dim.left;
+
         let y = evt.clientY - dim.top;
 
         let currentNodeNumber = ++counter;
 
-        //var group = svg.group().draggy();
+        var nodes = svg.group();
+        var node = nodes.group().translate(x, y).draggy();
+        node.circle(70)
+            .fill(nodeColor)
+            .opacity(0.8);
 
-        let circle = svg.circle(70)
-            .center(x, y)
-            .fill("#C2185B")
-            .attr("node-id", currentNodeNumber)
-            .opacity(0.8)
-            .draggy();
-
-        // group.plain(currentNodeNumber)
-        //     .center(x, y)
-        //     .font({fill: '#000000', family: 'Inconsolata'});
-
-        circle.click(function (evt) {
-            if (candidateNode && candidateNode !== this) {
-                //console.log(candidateNode)
-                //console.log(this)
-                var conn1 = candidateNode.connectable({
+        node.plain(currentNodeNumber)
+            .font({fill: '#000000', family: 'Inconsolata'});
+        node.click(function (evt) {
+            if (candidateNode === this) {
+                this.children()[0].fill({color: nodeColor});
+                candidateNode = null;
+            } else if (candidateNode) {
+                candidateNode.connectable({
                     marker: 'default',
                     targetAttach: 'perifery',
                     sourceAttach: 'perifery',
                     color: '#2a88c9'
                 }, this);
-
-                //this.fill({color: '#C2185B'});
-                //candidateNode.fill({color: '#C2185B'});
+                this.children()[0].fill({color: nodeColor});
+                candidateNode.children()[0].fill({color: nodeColor});
                 candidateNode = null;
             } else {
                 candidateNode = this;
-                //candidateNode.fill({color: '#b4ff47'})
-                //console.log(candidateNode)
+                candidateNode.children()[0].fill({color: '#b4ff47'})
             }
         });
-
-        // nodes.push(
-        //     {
-        //         nodeId: currentNodeNumber,
-        //         data: node
-        //     }
-        // );
-        // console.log(nodes);
     });
-
-
 </script>
 </body>
 </html>
