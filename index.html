@@ -32,11 +32,11 @@
     <svg id="stage"></svg>
 </div>
 <script>
-    var counter = 0;
+    var counter = -1;
 
     var candidateNode = null;
     var nodes = [];
-
+    var works = [];
 
     const nodeColor = '#C2185B';
 
@@ -58,8 +58,28 @@
             .opacity(0.8);
 
         node.on('contextmenu', function () {
-            this.remove();
             let nodeNumber = $(this.node).find('text').html();
+            this.remove();
+
+            works = $.grep(works, function (work) {
+                if (work.source === nodeNumber || work.target === nodeNumber) {
+                    $('#' + work.id).remove();
+                    return false;
+                } else {
+                    return true;
+                }
+            });
+
+            works.forEach(function (work) {
+                    if (work.source > nodeNumber) {
+                        work.source--
+                    }
+                    if (work.target > nodeNumber) {
+                        work.target--
+                    }
+                }
+            );
+
             $('.node-number').each(function () {
                 let currentValue = $(this).html();
                 if (nodeNumber < currentValue) {
@@ -80,18 +100,25 @@
 
                 let currentValue = this.children()[1].node.textContent;
                 let previousValue = candidateNode.children()[1].node.textContent;
-                console.log(currentValue);
-                console.log(previousValue);
 
                 if (currentValue < previousValue) {
                     alert("Переход из большего в меньшее не возможен!")
                 } else {
-                    candidateNode.connectable({
+                    let connectable = candidateNode.connectable({
                         marker: 'default',
                         targetAttach: 'perifery',
                         sourceAttach: 'perifery',
                         color: '#2a88c9'
                     }, this);
+
+                    let connectorId = $(connectable.connector.node).attr("id");
+                    works.push(
+                        {
+                            id: connectorId,
+                            source: previousValue,
+                            target: currentValue
+                        }
+                    );
 
                     this.children()[0].fill({color: nodeColor});
                     candidateNode.children()[0].fill({color: nodeColor});
@@ -105,6 +132,10 @@
     });
 
     $("div.content>svg>g").on('contextmenu', 'path', function (e) {
+        let connectorId = $(this).attr("id");
+        works = $.grep(works, function (work) {
+            return work.id !== connectorId;
+        });
         $(this).remove();
     });
 </script>
