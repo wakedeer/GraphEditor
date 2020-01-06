@@ -22,13 +22,18 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-6">
-<!--            ERROR-->
+            <div id="message-alert" class="alert" style="display: none" role="alert">
+                <button id="alert-close-btn" type="button" class="close" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <span id="message-alert-text"></span>
+            </div>
         </div>
         <div class="col-md-1">
-            <button id="validation-btn" type="button" class="btn btn-info">Validation</button>
+            <button id="validation-btn" type="button" class="btn btn-info float-right">Validation</button>
         </div>
         <div class="col-md-1">
-            <button type="button" class="btn btn-info">Calculate</button>
+            <button type="button" class="btn btn-info float-left">Calculate</button>
         </div>
     </div>
     <div class="row">
@@ -202,7 +207,7 @@
                 let previousValue = candidateNode.children()[1].node.textContent;
 
                 if (currentValue < previousValue) {
-                    alert("Переход из большего в меньшее не возможен!")
+                    showAlert("Переход из большего в меньшее не возможен!", "alert-danger");
                 } else {
                     let connectable = candidateNode.connectable({
                         marker: 'default',
@@ -231,7 +236,7 @@
         });
     });
 
-    $("div.content>svg>g").on('contextmenu', 'path', function (e) {
+    $("svg>g").on('contextmenu', 'path', function (e) {
         let connectorId = $(this).attr("id");
         works = $.grep(works, function (work) {
             return work.id !== connectorId;
@@ -263,20 +268,47 @@
             )
         }
 
+        var msg = "";
         states.forEach(function (state) {
             if (state.id == 0 && (state.prev.length > 0 || state.next.length == 0)) {
-                alert("Состояние 0 не начальное!");
+                msg += "Состояние <strong>0</strong> не начальное! </br>";
             }
 
             if (state.id == counter && (state.next.length > 0 || state.prev.length == 0)) {
-                alert("Состояние " + counter + " не конечное!");
+                msg += "Состояние <strong>" + counter + "</strong> не конечное!</br>";
             }
 
             if (state.id > 0 && state.id < counter && (state.next.length == 0 || state.prev.length == 0)) {
-                alert("Состояние " + state.id + " не промежуточное!")
+                msg += "Состояние  <strong>" + state.id + "</strong> не промежуточное!</br>";
             }
         });
+
+        if (counter < 0) {
+            showAlert("Нарисуйте ниже сетевую модель", "alert-warning")
+        } else if (msg.length == 0) {
+            showAlert("Сетевая модель валидна. В таблицу работ введите длительности", "alert-success")
+        } else {
+            showAlert(msg, "alert-danger");
+        }
     });
+
+    function showAlert(text, type) {
+        let alert = $("#message-alert");
+        alert.removeClass("alert-danger");
+        alert.removeClass("alert-success");
+        alert.css("display", "block");
+        $("#message-alert-text").html(text);
+        alert.addClass(type);
+    }
+
+    $("#alert-close-btn").click(function (e) {
+        let alert = $("#message-alert");
+        alert.removeClass("alert-danger");
+        alert.removeClass("alert-success");
+        alert.css("display", "none");
+    });
+
+
 </script>
 </body>
 </html>
