@@ -60,9 +60,8 @@
         node.on('contextmenu', function () {
             let nodeNumber = $(this.node).find('text').html();
             this.remove();
-
             works = $.grep(works, function (work) {
-                if (work.source === nodeNumber || work.target === nodeNumber) {
+                if (work.source == nodeNumber || work.target == nodeNumber) {
                     $('#' + work.id).remove();
                     return false;
                 } else {
@@ -72,10 +71,10 @@
 
             works.forEach(function (work) {
                     if (work.source > nodeNumber) {
-                        work.source--
+                        work.source--;
                     }
                     if (work.target > nodeNumber) {
-                        work.target--
+                        work.target--;
                     }
                 }
             );
