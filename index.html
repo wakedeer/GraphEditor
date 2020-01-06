@@ -31,11 +31,11 @@
 <div class="content" oncontextmenu="return false;">
     <svg id="stage"></svg>
 </div>
+<button id="validation-btn">Validation</button>
 <script>
     var counter = -1;
 
     var candidateNode = null;
-    var nodes = [];
     var works = [];
 
     const nodeColor = '#C2185B';
@@ -136,6 +136,45 @@
             return work.id !== connectorId;
         });
         $(this).remove();
+    });
+
+
+    $("#validation-btn").click(function (e) {
+        var states = [];
+        for (let i = 0; i <= counter; i++) {
+            let previous = [];
+            let next = [];
+            works.forEach(function (work) {
+                if (i == work.target) {
+                    previous.push(work.source);
+                }
+                if (i == work.source) {
+                    next.push(work.target);
+                }
+            });
+
+            states.push(
+                {
+                    id: i,
+                    prev: previous,
+                    next: next
+                }
+            )
+        }
+
+        states.forEach(function (state) {
+            if (state.id == 0 && (state.prev.length > 0 || state.next.length == 0)){
+                alert("Состояние 0 не начальное!");
+            }
+
+            if (state.id == counter && (state.next.length > 0 || state.prev.length == 0)) {
+                alert("Состояние " + counter + " не конечное!");
+            }
+
+            if (state.id > 0 && state.id < counter && (state.next.length == 0 || state.prev.length == 0)) {
+                alert("Состояние " + state.id + " не промежуточное!")
+            }
+        });
     });
 </script>
 </body>
