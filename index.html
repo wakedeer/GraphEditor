@@ -65,7 +65,8 @@
                 if (nodeNumber < currentValue) {
                     $(this).html(--currentValue)
                 }
-            })
+            });
+            counter--;
         });
 
         node.plain(currentNodeNumber)
@@ -76,15 +77,26 @@
                 this.children()[0].fill({color: nodeColor});
                 candidateNode = null;
             } else if (candidateNode) {
-                candidateNode.connectable({
-                    marker: 'default',
-                    targetAttach: 'perifery',
-                    sourceAttach: 'perifery',
-                    color: '#2a88c9'
-                }, this);
-                this.children()[0].fill({color: nodeColor});
-                candidateNode.children()[0].fill({color: nodeColor});
-                candidateNode = null;
+
+                let currentValue = this.children()[1].node.textContent;
+                let previousValue = candidateNode.children()[1].node.textContent;
+                console.log(currentValue);
+                console.log(previousValue);
+
+                if (currentValue < previousValue) {
+                    alert("Переход из большего в меньшее не возможен!")
+                } else {
+                    candidateNode.connectable({
+                        marker: 'default',
+                        targetAttach: 'perifery',
+                        sourceAttach: 'perifery',
+                        color: '#2a88c9'
+                    }, this);
+
+                    this.children()[0].fill({color: nodeColor});
+                    candidateNode.children()[0].fill({color: nodeColor});
+                    candidateNode = null;
+                }
             } else {
                 candidateNode = this;
                 candidateNode.children()[0].fill({color: '#b4ff47'})
