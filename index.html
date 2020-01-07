@@ -156,6 +156,7 @@
 
         node.circle(70)
             .fill(nodeColor)
+            .attr("data-node-num", currentNodeNumber)
             .opacity(0.8);
 
         node.on('contextmenu', function () {
@@ -220,8 +221,8 @@
                     works.push(
                         {
                             id: connectorId,
-                            source: previousValue,
-                            target: currentValue
+                            source: parseInt(previousValue, 10),
+                            target: parseInt(currentValue, 10)
                         }
                     );
                     this.children()[0].fill({color: nodeColor});
@@ -317,13 +318,54 @@
             let cell = $("#work-table").find('td[data-work-id="' + work.id + '"]');
             let time = cell.html();
             if (time) {
-                work.time = time;
+                work.time = parseInt(time, 10);
             } else {
                 $(cell).addClass("table-danger");
                 showAlert("В таблице работ заполнены не все длительности!", "alert-danger");
                 return;
             }
         });
+
+//create table
+        for (let i = 0; i < states.length; i++) {
+            let tp = 0;
+            states[i].tp = tp;
+            if (i > 0) {
+                states[i].prev.forEach(function (prev) {
+                    let element = works.find(function (work) {
+                        return work.source == prev && work.target == i
+                    });
+                    tp = states[prev].tp + element.time;
+                    if (states[i].tp < tp) {
+                        states[i].tp = tp;
+                    }
+                });
+            }
+        }
+
+        var msg = "";
+        for (let i = states.length - 1; i >= 0; i--) {
+            let tn = 0;
+            console.log(i);
+            states[i].tn = states[states.length - 1].tp;
+            if (i < states.length - 1) {
+                states[i].next.forEach(function (next) {
+                    let element = works.find(function (work) {
+                        return work.source == i && work.target == next
+                    });
+                    tn = states[next].tn - element.time;
+                    if (states[i].tn > tn) {
+                        states[i].tn = tn;
+                    }
+                });
+            }
+            states[i].r = states[i].tn - states[i].tp;
+            if (states[i].r == 0) {
+                $("#stage").find("circle[data-node-num='" + i + "']").attr("fill", "#fff61c")
+                msg = "-" + i + msg;
+            }
+        }
+        showAlert("Критический путь " + msg + "  равен " + states[states.length - 1].tp, "alert-warning")
     });
 
     $("#work-table").on("keypress", "td[data-work-id]", function (e) {
