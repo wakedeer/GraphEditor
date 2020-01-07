@@ -135,23 +135,25 @@
     var counter = -1;
 
     var candidateNode = null;
+
     var works = [];
+    var states = [];
 
     const nodeColor = '#C2185B';
-
     var svg = SVG('stage').size("100%", 900);
-    var nodes = svg.group();
 
+    var nodes = svg.group();
     svg.dblclick(function (evt) {
         let e = evt.target;
+
         let dim = e.getBoundingClientRect();
 
         let x = evt.clientX - dim.left;
 
         let y = evt.clientY - dim.top;
-
         let currentNodeNumber = ++counter;
         var node = nodes.group().translate(x, y).draggy();
+
         node.circle(70)
             .fill(nodeColor)
             .opacity(0.8);
@@ -186,7 +188,6 @@
             });
             counter--;
         });
-
         node.plain(currentNodeNumber)
             .attr("class", "node-number")
             .font({fill: '#000000', family: 'Inconsolata'});
@@ -194,13 +195,20 @@
             if (candidateNode === this) {
                 this.children()[0].fill({color: nodeColor});
                 candidateNode = null;
-            } else if (candidateNode) {
 
+            } else if (candidateNode) {
                 let currentValue = this.children()[1].node.textContent;
                 let previousValue = candidateNode.children()[1].node.textContent;
 
+                let isAlreadyExist = works.some(function (work) {
+                    return work.source == previousValue && work.target == currentValue;
+                });
+
+
                 if (currentValue < previousValue) {
                     showAlert("Переход из большего в меньшее не возможен!", "alert-danger");
+                } else if (isAlreadyExist) {
+                    showAlert("Дублирующий переход из состояния " + previousValue + " в состояние " + currentValue + " не возможен!", "alert-danger");
                 } else {
                     let connectable = candidateNode.connectable({
                         marker: 'default',
@@ -208,7 +216,6 @@
                         sourceAttach: 'perifery',
                         color: '#2a88c9'
                     }, this);
-
                     let connectorId = $(connectable.connector.node).attr("id");
                     works.push(
                         {
@@ -217,7 +224,6 @@
                             target: currentValue
                         }
                     );
-
                     this.children()[0].fill({color: nodeColor});
                     candidateNode.children()[0].fill({color: nodeColor});
                     candidateNode = null;
@@ -227,7 +233,9 @@
                 candidateNode.children()[0].fill({color: '#b4ff47'})
             }
         });
+
     });
+
 
     $("svg>g").on('contextmenu', 'path', function (e) {
         let connectorId = $(this).attr("id");
@@ -236,10 +244,8 @@
         });
         $(this).remove();
     });
-
-
     $("#validation-btn").click(function (e) {
-        var states = [];
+        states = [];
         for (let i = 0; i <= counter; i++) {
             let previous = [];
             let next = [];
@@ -315,6 +321,7 @@
             } else {
                 $(cell).addClass("table-danger");
                 showAlert("В таблице работ заполнены не все длительности!", "alert-danger");
+                return;
             }
         });
     });
