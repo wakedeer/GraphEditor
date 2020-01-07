@@ -361,8 +361,10 @@
             }
             states[i].r = states[i].tn - states[i].tp;
             if (states[i].r == 0) {
-                $("#stage").find("circle[data-node-num='" + i + "']").attr("fill", "#fff61c")
+                $("#stage").find("circle[data-node-num='" + i + "']").attr("fill", "#fff61c");
                 msg = "-" + i + msg;
+            }else{
+                $("#stage").find("circle[data-node-num='" + i + "']").attr("fill", nodeColor)
             }
         }
         showAlert("Критический путь " + msg + "  равен " + states[states.length - 1].tp, "alert-warning")
