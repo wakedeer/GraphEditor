@@ -75,54 +75,21 @@
         <div class="col-md-12">
             <div class="container">
                 <div class="row">
-                    <h3>Table name:</h3>
+                    <h3>Таблица состояний:</h3>
                 </div>
                 <div class="row">
                     <table class="table">
                         <thead>
                         <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Previous</th>
-                            <th scope="col">Next</th>
-                            <th scope="col">#</th>
-                            <th scope="col">#</th>
-                            <th scope="col">#</th>
-                            <th scope="col">#</th>
-                            <th scope="col">#</th>
+                            <th scope="col">Состояние</th>
+                            <th scope="col">Предыдущие</th>
+                            <th scope="col">Последующие</th>
+                            <th scope="col">Ранее возможное время</th>
+                            <th scope="col">Позднее допустимое время</th>
+                            <th scope="col">Резерв времени</th>
                         </tr>
                         </thead>
-                        <tbody>
-                        <tr>
-                            <th scope="row">1</th>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>Otto</td>
-                            <td>Otto</td>
-                            <td>@mdo</td>
-                            <td>@mdo</td>
-                            <td>@mdo</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">2</th>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>Otto</td>
-                            <td>Otto</td>
-                            <td>@mdo</td>
-                            <td>@mdo</td>
-                            <td>@mdo</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">3</th>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>Otto</td>
-                            <td>Otto</td>
-                            <td>@mdo</td>
-                            <td>@mdo</td>
-                            <td>@mdo</td>
-                        </tr>
-                        </tbody>
+                        <tbody id="states-table-1"></tbody>
                     </table>
                 </div>
             </div>
@@ -363,10 +330,19 @@
             if (states[i].r == 0) {
                 $("#stage").find("circle[data-node-num='" + i + "']").attr("fill", "#fff61c");
                 msg = "-" + i + msg;
-            }else{
+            } else {
                 $("#stage").find("circle[data-node-num='" + i + "']").attr("fill", nodeColor)
             }
         }
+
+        //fill states table
+        var statesTableHtml = "";
+        states.forEach(function (state) {
+            statesTableHtml += '<tr><th scope="row">' + state.id + '</th><td>' + state.prev + '</td><td>' + state.next + '</td><td>' + state.tp + '</td><td>' + state.tn + '</td><td>' + state.r + '</td></tr>';
+        });
+
+        $("#states-table-1").html(statesTableHtml);
+
         showAlert("Критический путь " + msg + "  равен " + states[states.length - 1].tp, "alert-warning")
     });
 
