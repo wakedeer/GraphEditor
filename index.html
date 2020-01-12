@@ -138,6 +138,7 @@
                 }
             });
 
+            //removing countdown
             works.forEach(function (work) {
                     if (work.source > nodeNumber) {
                         work.source--;
@@ -204,7 +205,7 @@
 
     });
 
-
+    //deleting
     $("svg>g").on('contextmenu', 'path', function (e) {
         let connectorId = $(this).attr("id");
         works = $.grep(works, function (work) {
@@ -212,6 +213,7 @@
         });
         $(this).remove();
     });
+
     $("#validation-btn").click(function (e) {
         states = [];
         for (let i = 0; i <= counter; i++) {
@@ -255,7 +257,9 @@
         } else if (msg.length == 0) {
             let tableHtml = "";
             works.forEach(function (work) {
-                tableHtml += "<tr><td class='table-info'>" + work.source + "</td><td class='table-info'>" + work.target + "</td><td data-work-id='" + work.id + "'contenteditable='true'></td></tr>"
+                console.log(work);
+                tableHtml += "<tr><td class='table-info'>" + work.source + "</td><td class='table-info'>" + work.target + "</td><td data-work-id='" + work.id + "'contenteditable='true'" +
+                    (work.time ? "class='table-success'>" + work.time : ">") + "</td></tr>";
             });
             $("#work-table").html(tableHtml);
             showAlert("Сетевая модель валидна. В таблицу работ введите длительности", "alert-success")
@@ -313,7 +317,6 @@
         var msg = "";
         for (let i = states.length - 1; i >= 0; i--) {
             let tn = 0;
-            console.log(i);
             states[i].tn = states[states.length - 1].tp;
             if (i < states.length - 1) {
                 states[i].next.forEach(function (next) {
@@ -331,7 +334,7 @@
                 $("#stage").find("circle[data-node-num='" + i + "']").attr("fill", "#fff61c");
                 msg = "-" + i + msg;
             } else {
-                $("#stage").find("circle[data-node-num='" + i + "']").attr("fill", nodeColor)
+                $("#stage").find("circle[data-node-num='" + i + "']").attr("fill", nodeColor);
             }
         }
 
