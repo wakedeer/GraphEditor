@@ -163,7 +163,6 @@ $("#validation-btn").click(function () {
     } else if (msg.length == 0) {
         let tableHtml = "";
         works.forEach(function (work) {
-            console.log(work);
             tableHtml += "<tr><td class='table-info'>" + work.source + "</td><td class='table-info'>" + work.target + "</td><td data-work-id='" + work.id + "'contenteditable='true'" +
                 (work.time ? "class='table-success'>" + work.time : ">") + "</td></tr>";
         });
