@@ -7,19 +7,14 @@ const CONNECTOR_COLOR = '#2a88c9';
 const TEXT_COLOR = '#000000';
 
 //Data
-var counterOne = -1;
-var candidateNodeOne = null;
-var worksOne = [];
-var statesOne = [];
-
-//SVG elements
-var svgOne = SVG('stage-1').size("100%", 900);
-
-var counterArr = [null, counterOne];
-var candidateNodeArr = [null, candidateNodeOne];
-var worksArr = [null, worksOne];
-var statesArr = [null, statesOne];
-var svgArr = [null, svgOne];
+var counterArr = [-1, -1];
+var candidateNodeArr = [null, null];
+var worksArr = [[], []];
+var statesArr = [[], []];
+var svgArr = [
+    SVG('stage-0').size("100%", 900),
+    SVG('stage-1').size("100%", 900)
+];
 
 function recountNodes(index, nodeNumber) {
     $("#stage-" + index).find('.node-number').each(function () {
@@ -246,82 +241,82 @@ $(".svg-stage").mousedown(function () {
 
 //         ---------------- index sensitive functions -----------------------------
 
-svgArr[1].dblclick(function (evt) {
-    let index = 1;
+$(svgArr).each(function (index) {
+    this.dblclick(function (evt) {
+        let e = evt.target;
+        let dim = e.getBoundingClientRect();
+        let x = evt.clientX - dim.left;
+        let y = evt.clientY - dim.top;
 
-    let e = evt.target;
-    let dim = e.getBoundingClientRect();
-    let x = evt.clientX - dim.left;
-    let y = evt.clientY - dim.top;
+        const nodesOne = svgArr[index].group();
+        let node = nodesOne.group().translate(x, y).draggy();
 
-    const nodesOne = svgArr[index].group();
-    let node = nodesOne.group().translate(x, y).draggy();
+        let currentNodeNumber = ++counterArr[index];
 
-    let currentNodeNumber = ++counterArr[index];
+        drowNodeElements(node, currentNodeNumber);
 
-    drowNodeElements(node, currentNodeNumber);
+        node.on('contextmenu', function () {
+            let nodeNumber = $(this.node).find('text').html();
+            this.remove();
+            worksArr[index] = $.grep(worksArr[index], removeNeighborsWorks(nodeNumber));
 
-    node.on('contextmenu', function () {
-        let nodeNumber = $(this.node).find('text').html();
-        this.remove();
-        worksArr[index] = $.grep(worksArr[index], removeNeighborsWorks(nodeNumber));
+            //removing countdown
+            worksArr[index].forEach(recalculateWorks(nodeNumber));
+            recountNodes(index, nodeNumber);
+            counterArr[index]--;
+        });
 
-        //removing countdown
-        worksArr[index].forEach(recalculateWorks(nodeNumber));
-        recountNodes(index, nodeNumber);
-        counterArr[index]--;
-    });
-
-    node.click(function () {
-        if (candidateNodeArr[index] === this) {
-            this.children()[0].fill({color: CIRCLE_COLOR});
-            candidateNodeArr[index] = null;
-        } else if (candidateNodeArr[index]) {
-
-            let currentValue = this.children()[1].node.textContent;
-            let previousValue = candidateNodeArr[index].children()[1].node.textContent;
-
-            let works = worksArr[index];
-            let isAlreadyExist = findDuplicated(works, previousValue, currentValue);
-
-            if (currentValue < previousValue) {
-                showAlert("Переход из большего в меньшее не возможен!", "alert-danger", index);
-            } else if (isAlreadyExist) {
-                showAlert("Дублирующий переход из состояния " + previousValue + " в состояние " + currentValue + " не возможен!", "alert-danger", index);
-            } else {
-                let connectable = candidateNodeArr[index].connectable({
-                    marker: 'default',
-                    targetAttach: 'perifery',
-                    sourceAttach: 'perifery',
-                    color: CONNECTOR_COLOR
-                }, this);
-
-                let connectorId = $(connectable.connector.node).attr("id");
-                //remove work
-                connectable.connector.attr("stroke-width", 1.5);
-
-                connectable.connector.on('contextmenu', function () {
-                    let connectorId = this.id();
-                    worksArr[index] = $.grep(worksArr[index], function (work) {
-                        return work.id !== connectorId;
-                    });
-                    this.remove();
-                });
-                works.push(
-                    {
-                        id: connectorId,
-                        source: parseInt(previousValue, 10),
-                        target: parseInt(currentValue, 10)
-                    }
-                );
+        node.click(function () {
+            if (candidateNodeArr[index] === this) {
                 this.children()[0].fill({color: CIRCLE_COLOR});
-                candidateNodeArr[index].children()[0].fill({color: CIRCLE_COLOR});
                 candidateNodeArr[index] = null;
+            } else if (candidateNodeArr[index]) {
+
+                let currentValue = this.children()[1].node.textContent;
+                let previousValue = candidateNodeArr[index].children()[1].node.textContent;
+
+                let works = worksArr[index];
+                let isAlreadyExist = findDuplicated(works, previousValue, currentValue);
+
+                if (currentValue < previousValue) {
+                    showAlert("Переход из большего в меньшее не возможен!", "alert-danger", index);
+                } else if (isAlreadyExist) {
+                    showAlert("Дублирующий переход из состояния " + previousValue + " в состояние " + currentValue + " не возможен!", "alert-danger", index);
+                } else {
+                    let connectable = candidateNodeArr[index].connectable({
+                        marker: 'default',
+                        targetAttach: 'perifery',
+                        sourceAttach: 'perifery',
+                        color: CONNECTOR_COLOR
+                    }, this);
+
+                    let connectorId = $(connectable.connector.node).attr("id");
+                    //remove work
+                    connectable.connector.attr("stroke-width", 1.5);
+
+                    connectable.connector.on('contextmenu', function () {
+                        let connectorId = this.id();
+                        worksArr[index] = $.grep(worksArr[index], function (work) {
+                            return work.id !== connectorId;
+                        });
+                        this.remove();
+                    });
+                    works.push(
+                        {
+                            id: connectorId,
+                            source: parseInt(previousValue, 10),
+                            target: parseInt(currentValue, 10)
+                        }
+                    );
+                    this.children()[0].fill({color: CIRCLE_COLOR});
+                    candidateNodeArr[index].children()[0].fill({color: CIRCLE_COLOR});
+                    candidateNodeArr[index] = null;
+                }
+            } else {
+                candidateNodeArr[index] = this;
+                candidateNodeArr[index].children()[0].fill({color: CANDIDATE_CIRCLE_COLOR})
             }
-        } else {
-            candidateNodeArr[index] = this;
-            candidateNodeArr[index].children()[0].fill({color: CANDIDATE_CIRCLE_COLOR})
-        }
+        });
     });
 });
 
@@ -342,7 +337,8 @@ $(".calculate-btn").click(function (e) {
 });
 
 
-$("#work-table-1").on('blur', "td[data-work-id]", function (e) {
-    storeWorks(1);
+$(".work-table").on('blur', "td[data-work-id]", function (e) {
+    let index = $(this).parent().parent().attr("data-index");
+    storeWorks(index);
 });
 
