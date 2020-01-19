@@ -120,7 +120,7 @@ svg.dblclick(function (evt) {
 });
 
 
-$("#validation-btn").click(function (e) {
+$("#validation-btn").click(function () {
     states = [];
     for (let i = 0; i <= counter; i++) {
         let previous = [];
@@ -143,7 +143,7 @@ $("#validation-btn").click(function (e) {
         )
     }
 
-    var msg = "";
+    let msg = "";
     states.forEach(function (state) {
         if (state.id == 0 && (state.prev.length > 0 || state.next.length == 0)) {
             msg += "Состояние <strong>0</strong> не начальное! </br>";
