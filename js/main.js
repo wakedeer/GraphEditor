@@ -85,6 +85,17 @@ svg.dblclick(function (evt) {
                     color: '#2a88c9'
                 }, this);
                 let connectorId = $(connectable.connector.node).attr("id");
+
+                //remove work
+                console.log(connectable.connector);
+                connectable.connector.on('contextmenu',function () {
+                    let connectorId = this.id();
+                    works = $.grep(works, function (work) {
+                        return work.id !== connectorId;
+                    });
+                    this.remove();
+                });
+
                 works.push(
                     {
                         id: connectorId,
@@ -104,14 +115,6 @@ svg.dblclick(function (evt) {
 
 });
 
-//deleting
-$("svg>g").on('contextmenu', 'path', function (e) {
-    let connectorId = $(this).attr("id");
-    works = $.grep(works, function (work) {
-        return work.id !== connectorId;
-    });
-    $(this).remove();
-});
 
 $("#validation-btn").click(function (e) {
     states = [];
