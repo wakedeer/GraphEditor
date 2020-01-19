@@ -236,7 +236,22 @@ function calculate(works, part, states) {
     showAlert("Критический путь " + msg + "  равен " + states[states.length - 1].tp, "alert-warning", part)
 }
 
-//         ----------------part sensitive functions
+$(".work-table").on("keypress", "td[data-work-id]", function (e) {
+    var keyCode = e.which ? e.which : e.keyCode;
+    if (!(keyCode >= 48 && keyCode <= 57)) {
+        return false;
+    } else {
+        $(this).removeClass("table-danger");
+        $(this).addClass("table-success");
+    }
+});
+
+$(".svg-stage").mousedown(function () {
+    let part = $(this).attr("data-index");
+    enableOnlyValidationBtn(part);
+});
+
+//         ---------------- part sensitive functions -----------------------------
 
 svgOne.dblclick(function (evt) {
     let part = "1";
@@ -332,20 +347,5 @@ $("#calculate-btn-1").click(function (e) {
 
 $("#work-table-1").on('blur', "td[data-work-id]", function (e) {
     storeWorks("1");
-});
-
-$(".work-table").on("keypress", "td[data-work-id]", function (e) {
-    var keyCode = e.which ? e.which : e.keyCode;
-    if (!(keyCode >= 48 && keyCode <= 57)) {
-        return false;
-    } else {
-        $(this).removeClass("table-danger");
-        $(this).addClass("table-success");
-    }
-});
-
-$(".svg-stage").mousedown(function () {
-    let part = $(this).attr("data-index");
-    enableOnlyValidationBtn(part);
 });
 
