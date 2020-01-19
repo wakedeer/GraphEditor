@@ -14,13 +14,15 @@ var statesOne = [];
 
 //SVG elements
 var svgOne = SVG('stage-1').size("100%", 900);
-var nodesOne = svgOne.group();
 
-var svgTwo = SVG('stage-2').size("100%", 900);
-var nodesTwo = svgTwo.group();
+var counterArr = [null, counterOne];
+var candidateNodeArr = [null, candidateNodeOne];
+var worksArr = [null, worksOne];
+var statesArr = [null, statesOne];
+var svgArr = [null, svgOne];
 
-function recountNodes(part, nodeNumber) {
-    $("#stage-" + part).find('.node-number').each(function () {
+function recountNodes(index, nodeNumber) {
+    $("#stage-" + index).find('.node-number').each(function () {
         let currentValue = $(this).html();
         if (nodeNumber < currentValue) {
             $(this).html(--currentValue);
@@ -62,38 +64,29 @@ function drowNodeElements(node, currentNodeNumber) {
         .font({fill: TEXT_COLOR, family: 'Inconsolata'});
 }
 
-function findDublicate(works, previousValue, currentValue) {
+function findDuplicated(works, previousValue, currentValue) {
     return works.some(function (work) {
         return work.source == previousValue && work.target == currentValue;
     });
 }
 
-function createNode(evt) {
-    let e = evt.target;
-    let dim = e.getBoundingClientRect();
-    let x = evt.clientX - dim.left;
-    let y = evt.clientY - dim.top;
-    let node = nodesOne.group().translate(x, y).draggy();
-    return node;
+function enableOnlyCalculationBtn(index) {
+    $("#validation-btn-" + index).removeClass("visible");
+    $("#validation-btn-" + index).addClass("invisible");
+
+    $("#calculate-btn-" + index).removeClass("invisible");
+    $("#calculate-btn-" + index).addClass("visible");
 }
 
-function enableOnlyCalculationBtn(part) {
-    $("#validation-btn-" + part).removeClass("visible");
-    $("#validation-btn-" + part).addClass("invisible");
+function enableOnlyValidationBtn(index) {
+    $("#validation-btn-" + index).removeClass("invisible");
+    $("#validation-btn-" + index).addClass("visible");
 
-    $("#calculate-btn-" + part).removeClass("invisible");
-    $("#calculate-btn-" + part).addClass("visible");
+    $("#calculate-btn-" + index).removeClass("visible");
+    $("#calculate-btn-" + index).addClass("invisible");
 }
 
-function enableOnlyValidationBtn(part) {
-    $("#validation-btn-" + part).removeClass("invisible");
-    $("#validation-btn-" + part).addClass("visible");
-
-    $("#calculate-btn-" + part).removeClass("visible");
-    $("#calculate-btn-" + part).addClass("invisible");
-}
-
-function validation(counter, works, states, part) {
+function validation(counter, works, states, index) {
     for (let i = 0; i <= counter; i++) {
         let previous = [];
         let next = [];
@@ -129,40 +122,40 @@ function validation(counter, works, states, part) {
         }
     });
     if (counter < 0) {
-        showAlert("Нарисуйте ниже сетевую модель", "alert-warning", part)
+        showAlert("Нарисуйте ниже сетевую модель", "alert-warning", index)
     } else if (msg.length == 0) {
         let tableHtml = "";
         works.forEach(function (work) {
             tableHtml += "<tr><td class='table-info'>" + work.source + "</td><td class='table-info'>" + work.target + "</td><td data-work-id='" + work.id + "'contenteditable='true'" +
                 (work.time ? "class='table-success'>" + work.time : ">") + "</td></tr>";
         });
-        $("#work-table-1").html(tableHtml);
-        showAlert("Сетевая модель валидна. В таблицу работ введите длительности", "alert-success", part)
-        enableOnlyCalculationBtn(part);
+        $("#work-table-" + index).html(tableHtml);
+        showAlert("Сетевая модель валидна. В таблицу работ введите длительности", "alert-success", index)
+        enableOnlyCalculationBtn(index);
     } else {
-        showAlert(msg, "alert-danger", part);
+        showAlert(msg, "alert-danger", index);
     }
 }
 
-function showAlert(text, type, part) {
-    let alert = $("#message-alert-" + part);
+function showAlert(text, type, index) {
+    let alert = $("#message-alert-" + index);
     alert.removeClass("alert-danger");
     alert.removeClass("alert-success");
     alert.css("display", "block");
-    $("#message-alert-text-" + part).html(text);
+    $("#message-alert-text-" + index).html(text);
     alert.addClass(type);
 }
 
-function hideAlert(part) {
-    let alert = $("#message-alert-" + part);
+function hideAlert(index) {
+    let alert = $("#message-alert-" + index);
     alert.removeClass("alert-danger");
     alert.removeClass("alert-success");
     alert.css("display", "none");
 }
 
-function storeWorks(part) {
-    worksOne.forEach(function (work) {
-        let cell = $("#work-table-" + part).find('td[data-work-id="' + work.id + '"]');
+function storeWorks(index) {
+    worksArr[index].forEach(function (work) {
+        let cell = $("#work-table-" + index).find('td[data-work-id="' + work.id + '"]');
         let time = cell.html();
         if (time) {
             work.time = parseInt(time, 10);
@@ -170,16 +163,16 @@ function storeWorks(part) {
     });
 }
 
-function calculate(works, part, states) {
+function calculate(works, index, states) {
     for (let i = 0; i < works.length; i++) {
         let work = works[i];
-        let cell = $("#work-table-" + part).find('td[data-work-id="' + work.id + '"]');
+        let cell = $("#work-table-" + index).find('td[data-work-id="' + work.id + '"]');
         let time = cell.html();
         if (time) {
             work.time = parseInt(time, 10);
         } else {
             $(cell).addClass("table-danger");
-            showAlert("В таблице работ заполнены не все длительности!", "alert-danger", "1");
+            showAlert("В таблице работ заполнены не все длительности!", "alert-danger", index);
             return;
         }
     }
@@ -218,10 +211,10 @@ function calculate(works, part, states) {
         }
         states[i].r = states[i].tn - states[i].tp;
         if (states[i].r == 0) {
-            $("#stage-" + part).find("circle[data-node-num='" + i + "']").attr("fill", CRITICAL_PATH_CIRCLE_COLOR);
+            $("#stage-" + index).find("circle[data-node-num='" + i + "']").attr("fill", CRITICAL_PATH_CIRCLE_COLOR);
             msg = "-" + i + msg;
         } else {
-            $("#stage-" + part).find("circle[data-node-num='" + i + "']").attr("fill", CIRCLE_COLOR);
+            $("#stage-" + index).find("circle[data-node-num='" + i + "']").attr("fill", CIRCLE_COLOR);
         }
     }
 
@@ -231,9 +224,9 @@ function calculate(works, part, states) {
         statesTableHtml += '<tr><th scope="row">' + state.id + '</th><td>' + state.prev + '</td><td>' + state.next + '</td><td>' + state.tp + '</td><td>' + state.tn + '</td><td>' + state.r + '</td></tr>';
     });
 
-    $("#states-table-" + part).html(statesTableHtml);
+    $("#states-table-" + index).html(statesTableHtml);
 
-    showAlert("Критический путь " + msg + "  равен " + states[states.length - 1].tp, "alert-warning", part)
+    showAlert("Критический путь " + msg + "  равен " + states[states.length - 1].tp, "alert-warning", index)
 }
 
 $(".work-table").on("keypress", "td[data-work-id]", function (e) {
@@ -247,50 +240,56 @@ $(".work-table").on("keypress", "td[data-work-id]", function (e) {
 });
 
 $(".svg-stage").mousedown(function () {
-    let part = $(this).attr("data-index");
-    enableOnlyValidationBtn(part);
+    let index = $(this).attr("data-index");
+    enableOnlyValidationBtn(index);
 });
 
-//         ---------------- part sensitive functions -----------------------------
+//         ---------------- index sensitive functions -----------------------------
 
-svgOne.dblclick(function (evt) {
-    let part = "1";
+svgArr[1].dblclick(function (evt) {
+    let index = 1;
 
-    let node = createNode(evt);
+    let e = evt.target;
+    let dim = e.getBoundingClientRect();
+    let x = evt.clientX - dim.left;
+    let y = evt.clientY - dim.top;
 
-    let currentNodeNumber = ++counterOne;
+    const nodesOne = svgArr[index].group();
+    let node = nodesOne.group().translate(x, y).draggy();
+
+    let currentNodeNumber = ++counterArr[index];
 
     drowNodeElements(node, currentNodeNumber);
 
     node.on('contextmenu', function () {
         let nodeNumber = $(this.node).find('text').html();
         this.remove();
-        worksOne = $.grep(worksOne, removeNeighborsWorks(nodeNumber));
+        worksArr[index] = $.grep(worksArr[index], removeNeighborsWorks(nodeNumber));
 
         //removing countdown
-        worksOne.forEach(recalculateWorks(nodeNumber));
-        recountNodes(part, nodeNumber);
-        counterOne--;
+        worksArr[index].forEach(recalculateWorks(nodeNumber));
+        recountNodes(index, nodeNumber);
+        counterArr[index]--;
     });
 
     node.click(function () {
-        if (candidateNodeOne === this) {
+        if (candidateNodeArr[index] === this) {
             this.children()[0].fill({color: CIRCLE_COLOR});
-            candidateNodeOne = null;
-        } else if (candidateNodeOne) {
+            candidateNodeArr[index] = null;
+        } else if (candidateNodeArr[index]) {
 
             let currentValue = this.children()[1].node.textContent;
-            let previousValue = candidateNodeOne.children()[1].node.textContent;
+            let previousValue = candidateNodeArr[index].children()[1].node.textContent;
 
-            let works = worksOne;
-            let isAlreadyExist = findDublicate(works, previousValue, currentValue);
+            let works = worksArr[index];
+            let isAlreadyExist = findDuplicated(works, previousValue, currentValue);
 
             if (currentValue < previousValue) {
-                showAlert("Переход из большего в меньшее не возможен!", "alert-danger", part);
+                showAlert("Переход из большего в меньшее не возможен!", "alert-danger", index);
             } else if (isAlreadyExist) {
-                showAlert("Дублирующий переход из состояния " + previousValue + " в состояние " + currentValue + " не возможен!", "alert-danger", part);
+                showAlert("Дублирующий переход из состояния " + previousValue + " в состояние " + currentValue + " не возможен!", "alert-danger", index);
             } else {
-                let connectable = candidateNodeOne.connectable({
+                let connectable = candidateNodeArr[index].connectable({
                     marker: 'default',
                     targetAttach: 'perifery',
                     sourceAttach: 'perifery',
@@ -303,7 +302,7 @@ svgOne.dblclick(function (evt) {
 
                 connectable.connector.on('contextmenu', function () {
                     let connectorId = this.id();
-                    worksOne = $.grep(worksOne, function (work) {
+                    worksArr[index] = $.grep(worksArr[index], function (work) {
                         return work.id !== connectorId;
                     });
                     this.remove();
@@ -316,36 +315,34 @@ svgOne.dblclick(function (evt) {
                     }
                 );
                 this.children()[0].fill({color: CIRCLE_COLOR});
-                candidateNodeOne.children()[0].fill({color: CIRCLE_COLOR});
-                candidateNodeOne = null;
+                candidateNodeArr[index].children()[0].fill({color: CIRCLE_COLOR});
+                candidateNodeArr[index] = null;
             }
         } else {
-            candidateNodeOne = this;
-            candidateNodeOne.children()[0].fill({color: CANDIDATE_CIRCLE_COLOR})
+            candidateNodeArr[index] = this;
+            candidateNodeArr[index].children()[0].fill({color: CANDIDATE_CIRCLE_COLOR})
         }
     });
 });
 
 $(".validation-btn").click(function () {
-    let counter = counterOne;
-    let works = worksOne;
-    statesOne = [];
-    let states = statesOne;
-    let part = $(this).attr("data-index");
-    validation(counter, works, states, part);
+    let index = $(this).attr("data-index");
+    statesArr[index] = [];
+    validation(counterArr[index], worksArr[index], statesArr[index], index);
 });
 
-$("#alert-close-btn-1").click(function (e) {
-    let part = "1";
-    hideAlert(part);
+$(".alert-close-btn").click(function (e) {
+    let index = $(this).attr("data-index");
+    hideAlert(index);
 });
 
-$("#calculate-btn-1").click(function (e) {
-    let part = "1", works = worksOne, states = statesOne;
-    calculate(works, part, states);
+$(".calculate-btn").click(function (e) {
+    let index = $(this).attr("data-index");
+    calculate(worksArr[index], index, statesArr[index]);
 });
+
 
 $("#work-table-1").on('blur', "td[data-work-id]", function (e) {
-    storeWorks("1");
+    storeWorks(1);
 });
 
