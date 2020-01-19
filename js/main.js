@@ -1,14 +1,19 @@
+//drawing parameters
+const CIRCLE_RADIUS_SIZE = 50;
+const CIRCLE_COLOR = '#C2185B';
+const CONNECTOR_COLOR = '#2a88c9';
+const TEXT_COLOR = '#000000';
+
+//Data
 var counter = -1;
-
 var candidateNode = null;
-
 var works = [];
 var states = [];
 
-const nodeColor = '#C2185B';
 var svg = SVG('stage').size("100%", 900);
 
 var nodes = svg.group();
+
 svg.dblclick(function (evt) {
     let e = evt.target;
 
@@ -20,8 +25,8 @@ svg.dblclick(function (evt) {
     let currentNodeNumber = ++counter;
     var node = nodes.group().translate(x, y).draggy();
 
-    node.circle(70)
-        .fill(nodeColor)
+    node.circle(CIRCLE_RADIUS_SIZE)
+        .fill(CIRCLE_COLOR)
         .attr("data-node-num", currentNodeNumber)
         .opacity(0.8);
 
@@ -58,12 +63,11 @@ svg.dblclick(function (evt) {
     });
     node.plain(currentNodeNumber)
         .attr("class", "node-number")
-        .font({fill: '#000000', family: 'Inconsolata'});
-    node.click(function (evt) {
+        .font({fill: TEXT_COLOR, family: 'Inconsolata'});
+    node.click(function () {
         if (candidateNode === this) {
-            this.children()[0].fill({color: nodeColor});
+            this.children()[0].fill({color: CIRCLE_COLOR});
             candidateNode = null;
-
         } else if (candidateNode) {
             let currentValue = this.children()[1].node.textContent;
             let previousValue = candidateNode.children()[1].node.textContent;
@@ -82,13 +86,13 @@ svg.dblclick(function (evt) {
                     marker: 'default',
                     targetAttach: 'perifery',
                     sourceAttach: 'perifery',
-                    color: '#2a88c9'
+                    color: CONNECTOR_COLOR
                 }, this);
                 let connectorId = $(connectable.connector.node).attr("id");
 
                 //remove work
-                console.log(connectable.connector);
-                connectable.connector.on('contextmenu',function () {
+                connectable.connector.attr("stroke-width", 1.5);
+                connectable.connector.on('contextmenu', function () {
                     let connectorId = this.id();
                     works = $.grep(works, function (work) {
                         return work.id !== connectorId;
@@ -103,8 +107,8 @@ svg.dblclick(function (evt) {
                         target: parseInt(currentValue, 10)
                     }
                 );
-                this.children()[0].fill({color: nodeColor});
-                candidateNode.children()[0].fill({color: nodeColor});
+                this.children()[0].fill({color: CIRCLE_COLOR});
+                candidateNode.children()[0].fill({color: CIRCLE_COLOR});
                 candidateNode = null;
             }
         } else {
@@ -236,7 +240,7 @@ $("#calculate-btn").click(function (e) {
             $("#stage").find("circle[data-node-num='" + i + "']").attr("fill", "#fff61c");
             msg = "-" + i + msg;
         } else {
-            $("#stage").find("circle[data-node-num='" + i + "']").attr("fill", nodeColor);
+            $("#stage").find("circle[data-node-num='" + i + "']").attr("fill", CIRCLE_COLOR);
         }
     }
 
