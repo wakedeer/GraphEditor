@@ -62,7 +62,7 @@ svgOne.dblclick(function (evt) {
             let currentValue = $(this).html();
             if (nodeNumber < currentValue) {
                 $(this).html(--currentValue);
-                $(this).parent().find("circle").attr("data-node-num",currentValue)
+                $(this).parent().find("circle").attr("data-node-num", currentValue)
             }
         });
         counterOne--;
@@ -84,9 +84,9 @@ svgOne.dblclick(function (evt) {
                 return work.source == previousValue && work.target == currentValue;
             });
             if (currentValue < previousValue) {
-                showAlert("Переход из большего в меньшее не возможен!", "alert-danger");
+                showAlert("Переход из большего в меньшее не возможен!", "alert-danger", "1");
             } else if (isAlreadyExist) {
-                showAlert("Дублирующий переход из состояния " + previousValue + " в состояние " + currentValue + " не возможен!", "alert-danger");
+                showAlert("Дублирующий переход из состояния " + previousValue + " в состояние " + currentValue + " не возможен!", "alert-danger", "1");
             } else {
                 let connectable = candidateNodeOne.connectable({
                     marker: 'default',
@@ -121,128 +121,141 @@ svgOne.dblclick(function (evt) {
             candidateNodeOne = this;
             candidateNodeOne.children()[0].fill({color: CANDIDATE_CIRCLE_COLOR})
         }
-
     });
 
 
 });
-$("#validation-btn-1").click(function () {
-    statesOne = [];
-    for (let i = 0; i <= counterOne; i++) {
+
+function validation(counter, works, states, part) {
+    for (let i = 0; i <= counter; i++) {
         let previous = [];
         let next = [];
-        worksOne.forEach(function (work) {
+        works.forEach(function (work) {
             if (i == work.target) {
                 previous.push(work.source);
             }
             if (i == work.source) {
                 next.push(work.target);
-            }
 
+            }
         });
-        statesOne.push(
+
+        states.push(
             {
                 id: i,
                 prev: previous,
                 next: next
             }
         )
-
     }
     let msg = "";
-    statesOne.forEach(function (state) {
+    states.forEach(function (state) {
         if (state.id == 0 && (state.prev.length > 0 || state.next.length == 0)) {
+
             msg += "Состояние <strong>0</strong> не начальное! </br>";
-
         }
-        if (state.id == counterOne && (state.next.length > 0 || state.prev.length == 0)) {
-            msg += "Состояние <strong>" + counterOne + "</strong> не конечное!</br>";
+        if (state.id == counter && (state.next.length > 0 || state.prev.length == 0)) {
 
+            msg += "Состояние <strong>" + counter + "</strong> не конечное!</br>";
         }
-        if (state.id > 0 && state.id < counterOne && (state.next.length == 0 || state.prev.length == 0)) {
+        if (state.id > 0 && state.id < counter && (state.next.length == 0 || state.prev.length == 0)) {
             msg += "Состояние  <strong>" + state.id + "</strong> не промежуточное!</br>";
-        }
 
+        }
     });
-    if (counterOne < 0) {
-        showAlert("Нарисуйте ниже сетевую модель", "alert-warning")
+    if (counter < 0) {
+        showAlert("Нарисуйте ниже сетевую модель", "alert-warning", part)
     } else if (msg.length == 0) {
         let tableHtml = "";
-        worksOne.forEach(function (work) {
+        works.forEach(function (work) {
             tableHtml += "<tr><td class='table-info'>" + work.source + "</td><td class='table-info'>" + work.target + "</td><td data-work-id='" + work.id + "'contenteditable='true'" +
                 (work.time ? "class='table-success'>" + work.time : ">") + "</td></tr>";
         });
         $("#work-table-1").html(tableHtml);
-        showAlert("Сетевая модель валидна. В таблицу работ введите длительности", "alert-success")
+        showAlert("Сетевая модель валидна. В таблицу работ введите длительности", "alert-success", part)
     } else {
-        showAlert(msg, "alert-danger");
+        showAlert(msg, "alert-danger", part);
     }
+}
 
+$("#validation-btn-1").click(function () {
+    let part = "1";
+    let counter = counterOne;
+    let works = worksOne;
+    statesOne = [];
+    let states = statesOne;
+    validation(counter, works, states, part);
 });
-function showAlert(text, type) {
-    let alert = $("#message-alert-1");
+
+function showAlert(text, type, part) {
+    let alert = $("#message-alert-" + part);
     alert.removeClass("alert-danger");
     alert.removeClass("alert-success");
     alert.css("display", "block");
-    $("#message-alert-text-1").html(text);
+    $("#message-alert-text-" + part).html(text);
     alert.addClass(type);
-
 }
-$("#alert-close-btn-1").click(function (e) {
-    let alert = $("#message-alert-1");
+
+function hideAlert(part) {
+    let alert = $("#message-alert-" + part);
     alert.removeClass("alert-danger");
     alert.removeClass("alert-success");
     alert.css("display", "none");
+}
 
+$("#alert-close-btn-1").click(function (e) {
+    let part = "1";
+    hideAlert(part);
 });
-$("#calculate-btn-1").click(function (e) {
-    for (let i = 0; i < worksOne.length; i++) {
-        let work = worksOne[i];
-        let cell = $("#work-table-1").find('td[data-work-id="' + work.id + '"]');
+
+function calculate(works, part, states) {
+    for (let i = 0; i < works.length; i++) {
+        let work = works[i];
+        let cell = $("#work-table-" + part).find('td[data-work-id="' + work.id + '"]');
         let time = cell.html();
         if (time) {
             work.time = parseInt(time, 10);
         } else {
             $(cell).addClass("table-danger");
-            showAlert("В таблице работ заполнены не все длительности!", "alert-danger");
+            showAlert("В таблице работ заполнены не все длительности!", "alert-danger", "1");
             return;
         }
     }
 
-//create table
-    for (let i = 0; i < statesOne.length; i++) {
+    //create table
+    for (let i = 0; i < states.length; i++) {
         let tp = 0;
-        statesOne[i].tp = tp;
+        states[i].tp = tp;
         if (i > 0) {
-            statesOne[i].prev.forEach(function (prev) {
-                let element = worksOne.find(function (work) {
+            states[i].prev.forEach(function (prev) {
+                let element = works.find(function (work) {
                     return work.source == prev && work.target == i
                 });
-                tp = statesOne[prev].tp + element.time;
-                if (statesOne[i].tp < tp) {
-                    statesOne[i].tp = tp;
+                tp = states[prev].tp + element.time;
+                if (states[i].tp < tp) {
+                    states[i].tp = tp;
                 }
             });
         }
     }
 
-    var msg = "";
-    for (let i = statesOne.length - 1; i >= 0; i--) {
+    let msg = "";
+    for (let i = states.length - 1; i >= 0; i--) {
         let tn = 0;
-        statesOne[i].tn = statesOne[statesOne.length - 1].tp;
-        if (i < statesOne.length - 1) {
-            statesOne[i].next.forEach(function (next) {
-                let element = worksOne.find(function (work) {
+        states[i].tn = states[states.length - 1].tp;
+        if (i < states.length - 1) {
+            states[i].next.forEach(function (next) {
+                let element = works.find(function (work) {
                     return work.source == i && work.target == next
                 });
-                tn = statesOne[next].tn - element.time;
-                if (statesOne[i].tn > tn) {
-                    statesOne[i].tn = tn;
+                tn = states[next].tn - element.time;
+                if (states[i].tn > tn) {
+                    states[i].tn = tn;
                 }
             });
         }
-        statesOne[i].r = statesOne[i].tn - statesOne[i].tp;
-        if (statesOne[i].r == 0) {
+        states[i].r = states[i].tn - states[i].tp;
+        if (states[i].r == 0) {
             $("#stage-1").find("circle[data-node-num='" + i + "']").attr("fill", CRITICAL_PATH_CIRCLE_COLOR);
             msg = "-" + i + msg;
         } else {
@@ -251,17 +264,36 @@ $("#calculate-btn-1").click(function (e) {
     }
 
     //fill states table
-    var statesTableHtml = "";
-    statesOne.forEach(function (state) {
+    let statesTableHtml = "";
+    states.forEach(function (state) {
         statesTableHtml += '<tr><th scope="row">' + state.id + '</th><td>' + state.prev + '</td><td>' + state.next + '</td><td>' + state.tp + '</td><td>' + state.tn + '</td><td>' + state.r + '</td></tr>';
     });
 
     $("#states-table-1").html(statesTableHtml);
 
-    showAlert("Критический путь " + msg + "  равен " + statesOne[statesOne.length - 1].tp, "alert-warning")
+    showAlert("Критический путь " + msg + "  равен " + states[states.length - 1].tp, "alert-warning", "1")
+}
+
+$("#calculate-btn-1").click(function (e) {
+    let part = "1", works = worksOne, states = statesOne;
+    calculate(works, part, states);
 });
 
-$("#work-table-1").on("keypress", "td[data-work-id]", function (e) {
+function storeWorks(part) {
+    worksOne.forEach(function (work) {
+        let cell = $("#work-table-" + part).find('td[data-work-id="' + work.id + '"]');
+        let time = cell.html();
+        if (time) {
+            work.time = parseInt(time, 10);
+        }
+    });
+}
+
+$("#work-table-1").on('blur', "td[data-work-id]", function (e) {
+    storeWorks("1");
+});
+
+$(".work-table").on("keypress", "td[data-work-id]", function (e) {
     var keyCode = e.which ? e.which : e.keyCode;
     if (!(keyCode >= 48 && keyCode <= 57)) {
         return false;
@@ -269,15 +301,4 @@ $("#work-table-1").on("keypress", "td[data-work-id]", function (e) {
         $(this).removeClass("table-danger");
         $(this).addClass("table-success");
     }
-});
-
-
-$("#work-table-1").on('blur', "td[data-work-id]", function (e) {
-    worksOne.forEach(function (work) {
-        let cell = $("#work-table-1").find('td[data-work-id="' + work.id + '"]');
-        let time = cell.html();
-        if (time) {
-            work.time = parseInt(time, 10);
-        }
-    });
 });
