@@ -24,25 +24,25 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-6">
-            <div id="message-alert" class="alert" style="display: none" role="alert">
-                <button id="alert-close-btn" type="button" class="close" aria-label="Close">
+            <div id="message-alert-1" class="alert" style="display: none" role="alert">
+                <button id="alert-close-btn-1" type="button" class="close" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <span id="message-alert-text"></span>
+                <span id="message-alert-text-1"></span>
             </div>
         </div>
         <div class="col-md-1">
-            <button id="validation-btn" type="button" class="btn btn-info float-right">Проверка</button>
+            <button id="validation-btn-1" type="button" class="btn btn-info float-right">Проверка</button>
         </div>
         <div class="col-md-1">
-            <button type="button" id="calculate-btn" class="btn btn-info float-left">Рассчёт</button>
+            <button type="button" id="calculate-btn-1" class="btn btn-info float-left">Рассчёт</button>
         </div>
     </div>
     <div class="row">
         <div class="col-md-8">
             <div class="row">
                 <div class="container-fluid" oncontextmenu="return false;">
-                    <svg id="stage" class="svg-stage"></svg>
+                    <svg id="stage-1" class="svg-stage"></svg>
                 </div>
             </div>
         </div>
@@ -59,7 +59,7 @@
                         <th scope="col">Длительность перехода</th>
                     </tr>
                     </thead>
-                    <tbody id="work-table">
+                    <tbody id="work-table-1">
                     </tbody>
                 </table>
             </div>
@@ -84,6 +84,79 @@
                         </tr>
                         </thead>
                         <tbody id="states-table-1"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6">
+            <div id="message-alert-2" class="alert" style="display: none" role="alert">
+                <button id="alert-close-btn-2" type="button" class="close" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <span id="message-alert-text-2"></span>
+            </div>
+        </div>
+        <div class="col-md-1">
+            <button id="validation-btn-2" type="button" class="btn btn-info float-right">Проверка</button>
+        </div>
+        <div class="col-md-1">
+            <button type="button" id="calculate-btn-2" class="btn btn-info float-left">Рассчёт</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="row">
+                <div class="container-fluid" oncontextmenu="return false;">
+                    <svg id="stage-2" class="svg-stage"></svg>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="row">
+                <h3>Таблица переходов:</h3>
+            </div>
+            <div class="row">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">Исходное</th>
+                        <th scope="col">Конечное</th>
+                        <th scope="col">Длительность перехода</th>
+                    </tr>
+                    </thead>
+                    <tbody id="work-table-2">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="container">
+                <div class="row">
+                    <h3>Таблица состояний:</h3>
+                </div>
+                <div class="row">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">Состояние</th>
+                            <th scope="col">Предыдущие</th>
+                            <th scope="col">Последующие</th>
+                            <th scope="col">Ранее возможное время</th>
+                            <th scope="col">Позднее допустимое время</th>
+                            <th scope="col">Резерв времени</th>
+                        </tr>
+                        </thead>
+                        <tbody id="states-table-2"></tbody>
                     </table>
                 </div>
             </div>
