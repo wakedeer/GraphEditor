@@ -19,70 +19,96 @@ var nodesOne = svgOne.group();
 var svgTwo = SVG('stage-2').size("100%", 900);
 var nodesTwo = svgTwo.group();
 
-svgOne.dblclick(function (evt) {
+function recounterNodes(part, nodeNumber) {
+    $("#stage-" + part).find('.node-number').each(function () {
+        let currentValue = $(this).html();
+        if (nodeNumber < currentValue) {
+            $(this).html(--currentValue);
+            $(this).parent().find("circle").attr("data-node-num", currentValue)
+        }
+    });
+}
 
-    let e = evt.target;
+function recalculateWorks(nodeNumber) {
+    return function (work) {
+        if (work.source > nodeNumber) {
+            work.source--;
+        }
+        if (work.target > nodeNumber) {
+            work.target--;
+        }
+    };
+}
 
-    let dim = e.getBoundingClientRect();
+function removeNeighborsWorks(nodeNumber) {
+    return function (work) {
+        if (work.source == nodeNumber || work.target == nodeNumber) {
+            $('#' + work.id).remove();
+            return false;
+        } else {
+            return true;
+        }
+    };
+}
 
-    let x = evt.clientX - dim.left;
-    let y = evt.clientY - dim.top;
-    let currentNodeNumber = ++counterOne;
-
-    var node = nodesOne.group().translate(x, y).draggy();
-
+function drowNodeElements(node, currentNodeNumber) {
     node.circle(CIRCLE_RADIUS_SIZE)
         .fill(CIRCLE_COLOR)
         .attr("data-node-num", currentNodeNumber)
         .opacity(0.8);
-    node.on('contextmenu', function () {
-        let nodeNumber = $(this.node).find('text').html();
-        this.remove();
-        worksOne = $.grep(worksOne, function (work) {
-            if (work.source == nodeNumber || work.target == nodeNumber) {
-                $('#' + work.id).remove();
-                return false;
-            } else {
-                return true;
-            }
-        });
 
-        //removing countdown
-        worksOne.forEach(function (work) {
-                if (work.source > nodeNumber) {
-                    work.source--;
-                }
-                if (work.target > nodeNumber) {
-                    work.target--;
-                }
-            }
-        );
-
-        $("#stage-1").find('.node-number').each(function () {
-            let currentValue = $(this).html();
-            if (nodeNumber < currentValue) {
-                $(this).html(--currentValue);
-                $(this).parent().find("circle").attr("data-node-num", currentValue)
-            }
-        });
-        counterOne--;
-    });
     node.plain(currentNodeNumber)
         .attr("class", "node-number")
         .font({fill: TEXT_COLOR, family: 'Inconsolata'});
+}
+
+function findDublicate(works, previousValue, currentValue) {
+    return works.some(function (work) {
+        return work.source == previousValue && work.target == currentValue;
+    });
+}
+
+function createNode(evt) {
+    let e = evt.target;
+    let dim = e.getBoundingClientRect();
+    let x = evt.clientX - dim.left;
+    let y = evt.clientY - dim.top;
+    let node = nodesOne.group().translate(x, y).draggy();
+    return node;
+}
+
+svgOne.dblclick(function (evt) {
+    let part = "1";
+
+    let node = createNode(evt);
+
+    let currentNodeNumber = ++counterOne;
+
+    drowNodeElements(node, currentNodeNumber);
+
+    node.on('contextmenu', function () {
+        let nodeNumber = $(this.node).find('text').html();
+        this.remove();
+        worksOne = $.grep(worksOne, removeNeighborsWorks(nodeNumber));
+
+        //removing countdown
+        worksOne.forEach(recalculateWorks(nodeNumber));
+        recounterNodes(part, nodeNumber);
+        counterOne--;
+    });
+
     node.click(function () {
         if (candidateNodeOne === this) {
             this.children()[0].fill({color: CIRCLE_COLOR});
             candidateNodeOne = null;
         } else if (candidateNodeOne) {
-            let currentValue = this.children()[1].node.textContent;
 
+            let currentValue = this.children()[1].node.textContent;
             let previousValue = candidateNodeOne.children()[1].node.textContent;
 
+            let works = worksOne;
+            let isAlreadyExist = findDublicate(works, previousValue, currentValue);
 
-            let isAlreadyExist = worksOne.some(function (work) {
-                return work.source == previousValue && work.target == currentValue;
-            });
             if (currentValue < previousValue) {
                 showAlert("Переход из большего в меньшее не возможен!", "alert-danger", "1");
             } else if (isAlreadyExist) {
@@ -106,7 +132,7 @@ svgOne.dblclick(function (evt) {
                     });
                     this.remove();
                 });
-                worksOne.push(
+                works.push(
                     {
                         id: connectorId,
                         source: parseInt(previousValue, 10),
@@ -122,8 +148,6 @@ svgOne.dblclick(function (evt) {
             candidateNodeOne.children()[0].fill({color: CANDIDATE_CIRCLE_COLOR})
         }
     });
-
-
 });
 
 function validation(counter, works, states, part) {
@@ -151,11 +175,9 @@ function validation(counter, works, states, part) {
     let msg = "";
     states.forEach(function (state) {
         if (state.id == 0 && (state.prev.length > 0 || state.next.length == 0)) {
-
             msg += "Состояние <strong>0</strong> не начальное! </br>";
         }
         if (state.id == counter && (state.next.length > 0 || state.prev.length == 0)) {
-
             msg += "Состояние <strong>" + counter + "</strong> не конечное!</br>";
         }
         if (state.id > 0 && state.id < counter && (state.next.length == 0 || state.prev.length == 0)) {
