@@ -190,8 +190,10 @@ $("#alert-close-btn").click(function (e) {
     alert.css("display", "none");
 });
 
+const CRITICAL_PATH_CIRCLE_COLOR = '#fff61c';
 $("#calculate-btn").click(function (e) {
-    works.forEach(function (work) {
+    for (let i = 0; i < works.length; i++) {
+        let work = works[i];
         let cell = $("#work-table").find('td[data-work-id="' + work.id + '"]');
         let time = cell.html();
         if (time) {
@@ -201,7 +203,7 @@ $("#calculate-btn").click(function (e) {
             showAlert("В таблице работ заполнены не все длительности!", "alert-danger");
             return;
         }
-    });
+    }
 
 //create table
     for (let i = 0; i < states.length; i++) {
@@ -237,7 +239,7 @@ $("#calculate-btn").click(function (e) {
         }
         states[i].r = states[i].tn - states[i].tp;
         if (states[i].r == 0) {
-            $("#stage").find("circle[data-node-num='" + i + "']").attr("fill", "#fff61c");
+            $("#stage").find("circle[data-node-num='" + i + "']").attr("fill", CRITICAL_PATH_CIRCLE_COLOR);
             msg = "-" + i + msg;
         } else {
             $("#stage").find("circle[data-node-num='" + i + "']").attr("fill", CIRCLE_COLOR);
@@ -263,4 +265,15 @@ $("#work-table").on("keypress", "td[data-work-id]", function (e) {
         $(this).removeClass("table-danger");
         $(this).addClass("table-success");
     }
+});
+
+
+$("#work-table").on('blur', "td[data-work-id]", function (e) {
+    works.forEach(function (work) {
+        let cell = $("#work-table").find('td[data-work-id="' + work.id + '"]');
+        let time = cell.html();
+        if (time) {
+            work.time = parseInt(time, 10);
+        }
+    });
 });
