@@ -77,6 +77,22 @@ function createNode(evt) {
     return node;
 }
 
+function enableOnlyCalculationBtn(part) {
+    $("#validation-btn-" + part).removeClass("visible");
+    $("#validation-btn-" + part).addClass("invisible");
+
+    $("#calculate-btn-" + part).removeClass("invisible");
+    $("#calculate-btn-" + part).addClass("visible");
+}
+
+function enableOnlyValidationBtn(part) {
+    $("#validation-btn-" + part).removeClass("invisible");
+    $("#validation-btn-" + part).addClass("visible");
+
+    $("#calculate-btn-" + part).removeClass("visible");
+    $("#calculate-btn-" + part).addClass("invisible");
+}
+
 function validation(counter, works, states, part) {
     for (let i = 0; i <= counter; i++) {
         let previous = [];
@@ -122,6 +138,7 @@ function validation(counter, works, states, part) {
         });
         $("#work-table-1").html(tableHtml);
         showAlert("Сетевая модель валидна. В таблицу работ введите длительности", "alert-success", part)
+        enableOnlyCalculationBtn(part);
     } else {
         showAlert(msg, "alert-danger", part);
     }
@@ -294,12 +311,12 @@ svgOne.dblclick(function (evt) {
     });
 });
 
-$("#validation-btn-1").click(function () {
-    let part = "1";
+$(".validation-btn").click(function () {
     let counter = counterOne;
     let works = worksOne;
     statesOne = [];
     let states = statesOne;
+    let part = $(this).attr("data-index");
     validation(counter, works, states, part);
 });
 
@@ -326,3 +343,9 @@ $(".work-table").on("keypress", "td[data-work-id]", function (e) {
         $(this).addClass("table-success");
     }
 });
+
+$(".svg-stage").mousedown(function () {
+    let part = $(this).attr("data-index");
+    enableOnlyValidationBtn(part);
+});
+

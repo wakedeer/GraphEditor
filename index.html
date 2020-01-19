@@ -32,17 +32,17 @@
             </div>
         </div>
         <div class="col-md-1">
-            <button id="validation-btn-1" type="button" class="btn btn-info float-right">Проверка</button>
+            <button id="validation-btn-1" type="button" data-index="1" class="btn btn-info float-right validation-btn visible">Проверка</button>
         </div>
         <div class="col-md-1">
-            <button type="button" id="calculate-btn-1" class="btn btn-info float-left">Рассчёт</button>
+            <button type="button" id="calculate-btn-1" data-index="1" class="btn btn-info float-left calculate-btn invisible">Рассчёт</button>
         </div>
     </div>
     <div class="row">
         <div class="col-md-8">
             <div class="row">
                 <div class="container-fluid" oncontextmenu="return false;">
-                    <svg id="stage-1" class="svg-stage"></svg>
+                    <svg id="stage-1" data-index="1" class="svg-stage"></svg>
                 </div>
             </div>
         </div>
@@ -90,9 +90,6 @@
         </div>
     </div>
 </div>
-
-
-
 
 <div class="container-fluid">
     <div class="row">
