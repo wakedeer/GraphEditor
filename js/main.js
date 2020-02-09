@@ -48,7 +48,7 @@ function removeNeighborsWorks(nodeNumber) {
     };
 }
 
-function drowNodeElements(node, currentNodeNumber) {
+function drawNodeElements(node, currentNodeNumber) {
     node.circle(CIRCLE_RADIUS_SIZE)
         .fill(CIRCLE_COLOR)
         .attr("data-node-num", currentNodeNumber)
@@ -66,19 +66,21 @@ function findDuplicated(works, previousValue, currentValue) {
 }
 
 function enableOnlyCalculationBtn(index) {
-    $("#validation-btn-" + index).removeClass("visible");
-    $("#validation-btn-" + index).addClass("invisible");
-
-    $("#calculate-btn-" + index).removeClass("invisible");
-    $("#calculate-btn-" + index).addClass("visible");
+    let validationBtn = $("#validation-btn-" + index);
+    let calcBtn = $("#calculate-btn-" + index);
+    validationBtn.removeClass("visible");
+    validationBtn.addClass("invisible");
+    calcBtn.removeClass("invisible");
+    calcBtn.addClass("visible");
 }
 
 function enableOnlyValidationBtn(index) {
-    $("#validation-btn-" + index).removeClass("invisible");
-    $("#validation-btn-" + index).addClass("visible");
-
-    $("#calculate-btn-" + index).removeClass("visible");
-    $("#calculate-btn-" + index).addClass("invisible");
+    let validationBtn = $("#validation-btn-" + index);
+    let calcBtn = $("#calculate-btn-" + index);
+    validationBtn.removeClass("invisible");
+    validationBtn.addClass("visible");
+    calcBtn.removeClass("visible");
+    calcBtn.addClass("invisible");
 }
 
 function validation(counter, works, states, index) {
@@ -253,7 +255,7 @@ $(svgArr).each(function (index) {
 
         let currentNodeNumber = ++counterArr[index];
 
-        drowNodeElements(node, currentNodeNumber);
+        drawNodeElements(node, currentNodeNumber);
 
         node.on('contextmenu', function () {
             let nodeNumber = $(this.node).find('text').html();
