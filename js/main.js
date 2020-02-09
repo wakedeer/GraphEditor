@@ -342,6 +342,7 @@ $(".alert-close-btn").click(function (e) {
 $(".calculate-btn").click(function (e) {
     let index = $(this).attr("data-index");
     calculate(worksArr[index], index, statesArr[index]);
+
 });
 
 $(".work-table").on('blur', "td[data-work-id]", function (e) {
