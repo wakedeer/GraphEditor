@@ -336,7 +336,6 @@ $(".calculate-btn").click(function (e) {
     calculate(worksArr[index], index, statesArr[index]);
 });
 
-
 $(".work-table").on('blur', "td[data-work-id]", function (e) {
     let index = $(this).parent().parent().attr("data-index");
     storeWorks(index);
