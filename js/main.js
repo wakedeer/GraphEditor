@@ -6,14 +6,20 @@ const CANDIDATE_CIRCLE_COLOR = '#b4ff47';
 const CONNECTOR_COLOR = '#2a88c9';
 const TEXT_COLOR = '#000000';
 
+//svg size
+const svgHeight = 900;
+const svgWight = "100%";
+
 //Data
 var counterArr = [-1, -1];
 var candidateNodeArr = [null, null];
 var worksArr = [[], []];
 var statesArr = [[], []];
 var svgArr = [
-    SVG('stage-0').size("100%", 900),
-    SVG('stage-1').size("100%", 900)
+    SVG('stage-0').size(svgWight, svgHeight),
+    SVG('stage-1').size(svgWight, svgHeight),
+    SVG('stage-2').size(svgWight, svgHeight),
+    SVG('stage-3').size(svgWight, svgHeight)
 ];
 
 function recountNodes(index, nodeNumber) {
