@@ -12,9 +12,9 @@ const svgWight = "100%";
 
 //Data
 var counterArr = [-1, -1, -1, -1];
-var candidateNodeArr = [null, null];
-var worksArr = [[], []];
-var statesArr = [[], []];
+var candidateNodeArr = [null, null, null, null];
+var worksArr = [[], [], [], []];
+var statesArr = [[], [], [], []];
 var svgArr = [
     SVG('stage-0').size(svgWight, svgHeight),
     SVG('stage-1').size(svgWight, svgHeight),
