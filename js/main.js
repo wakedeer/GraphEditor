@@ -225,7 +225,9 @@ function calculate(works, index, states) {
 
     showAlert("Критический путь " + msg + "  равен " + criticalPath, "alert-warning", index)
 
-    $(".critical-path-" + index).text(criticalPath);
+    let criticalPathCell = $(".critical-path-" + index);
+    criticalPathCell.text(criticalPath);
+    criticalPathCell.removeClass("table-danger");
     $("table.performance-indicator").find("td").empty();
 }
 
@@ -242,6 +244,30 @@ $(".work-table").on("keypress", "td[data-work-id]", function (e) {
 $(".svg-stage").mousedown(function () {
     let index = $(this).attr("data-index");
     enableOnlyValidationBtn(index);
+});
+
+$("#calculate-performance-0").click(function () {
+    let intens = [];
+    $("table.critical-path-table-0").find("td").each(function () {
+        let value = $(this).text();
+        if (!value) {
+            $(this).addClass("table-danger");
+            return;
+        }
+        intens.push(1 / value);
+    });
+
+    let znam = intens[0] * (intens[0] + intens[1] + intens[2]) + intens[1] * intens[2];
+    let p = [];
+    p.push(intens[1] * intens[2] / znam * 100);
+    p.push(intens[0] * intens[2] * (intens[0] + intens[1] + intens[2]) / znam / (intens[1] + intens[2]) * 100);
+    p.push(intens[0] * intens[1] / znam * 100);
+    p.push(intens[0] * intens[0] * intens[1] / znam / (intens[1] + intens[2]) * 100);
+
+    let indicatorCells = $("#performance-indicator-0").find("td");
+    $.each(p, function (i, val) {
+        $(indicatorCells[i]).text(Number.parseFloat(val).toFixed(2));
+    })
 });
 
 $(svgArr).each(function (index) {
