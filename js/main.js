@@ -191,9 +191,10 @@ function calculate(works, index, states) {
     }
 
     let msg = "";
+    let criticalPath = states[states.length - 1].tp;
     for (let i = states.length - 1; i >= 0; i--) {
         let tn = 0;
-        states[i].tn = states[states.length - 1].tp;
+        states[i].tn = criticalPath;
         if (i < states.length - 1) {
             states[i].next.forEach(function (next) {
                 let element = works.find(function (work) {
@@ -222,7 +223,10 @@ function calculate(works, index, states) {
 
     $("#states-table-" + index).html(statesTableHtml);
 
-    showAlert("Критический путь " + msg + "  равен " + states[states.length - 1].tp, "alert-warning", index)
+    showAlert("Критический путь " + msg + "  равен " + criticalPath, "alert-warning", index)
+
+    $(".critical-path-" + index).text(criticalPath);
+    $("table.performance-indicator").find("td").empty();
 }
 
 $(".work-table").on("keypress", "td[data-work-id]", function (e) {
@@ -239,8 +243,6 @@ $(".svg-stage").mousedown(function () {
     let index = $(this).attr("data-index");
     enableOnlyValidationBtn(index);
 });
-
-//         ---------------- index sensitive functions -----------------------------
 
 $(svgArr).each(function (index) {
     this.dblclick(function (evt) {
