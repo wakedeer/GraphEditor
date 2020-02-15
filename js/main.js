@@ -7,11 +7,11 @@ const CONNECTOR_COLOR = '#2a88c9';
 const TEXT_COLOR = '#000000';
 
 //svg size
-const svgHeight = 900;
+const svgHeight = 700;
 const svgWight = "100%";
 
 //Data
-var counterArr = [-1, -1];
+var counterArr = [-1, -1, -1, -1];
 var candidateNodeArr = [null, null];
 var worksArr = [[], []];
 var statesArr = [[], []];
