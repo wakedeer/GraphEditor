@@ -246,16 +246,28 @@ $(".svg-stage").mousedown(function () {
     enableOnlyValidationBtn(index);
 });
 
-$("#calculate-performance-0").click(function () {
+function getIntensities(index) {
     let intens = [];
-    $("table.critical-path-table-0").find("td").each(function () {
+    let hasErrors = false;
+    $("table.critical-path-table-" + index).find("td").each(function () {
         let value = $(this).text();
         if (!value) {
             $(this).addClass("table-danger");
+            hasErrors = true;
             return;
         }
         intens.push(1 / value);
     });
+    return {intens, hasErrors};
+}
+
+$("#calculate-performance-0").click(function () {
+    let index = "0";
+
+    let {intens, hasErrors} = getIntensities(index);
+    if (hasErrors) {
+        return;
+    }
 
     let znam = intens[0] * (intens[0] + intens[1] + intens[2]) + intens[1] * intens[2];
     let p = [];
