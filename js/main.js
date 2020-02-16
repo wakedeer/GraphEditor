@@ -261,6 +261,13 @@ function getIntensities(index) {
     return {intens, hasErrors};
 }
 
+function fillIntensitiesResults(index, p) {
+    let indicatorCells = $("#performance-indicator-" + index).find("td");
+    $.each(p, function (i, val) {
+        $(indicatorCells[i]).text(Number.parseFloat(val).toFixed(2));
+    })
+}
+
 $("#calculate-performance-0").click(function () {
     let index = "0";
 
@@ -269,18 +276,37 @@ $("#calculate-performance-0").click(function () {
         return;
     }
 
-    let znam = intens[0] * (intens[0] + intens[1] + intens[2]) + intens[1] * intens[2];
     let p = [];
+    let znam = intens[0] * (intens[0] + intens[1] + intens[2]) + intens[1] * intens[2];
     p.push(intens[1] * intens[2] / znam * 100);
     p.push(intens[0] * intens[2] * (intens[0] + intens[1] + intens[2]) / znam / (intens[1] + intens[2]) * 100);
     p.push(intens[0] * intens[1] / znam * 100);
     p.push(intens[0] * intens[0] * intens[1] / znam / (intens[1] + intens[2]) * 100);
 
-    let indicatorCells = $("#performance-indicator-0").find("td");
-    $.each(p, function (i, val) {
-        $(indicatorCells[i]).text(Number.parseFloat(val).toFixed(2));
-    })
+    fillIntensitiesResults(index, p);
 });
+
+$("#calculate-performance-1").click(function () {
+    let index = "1";
+
+    let {intens, hasErrors} = getIntensities(index);
+
+    if (hasErrors) {
+        return;
+    }
+
+    let p = [];
+    let znam = intens[0] * (intens[0] + intens[1] + intens[2]) + intens[1] * intens[2];
+    p.push(intens[1] * intens[2] / znam * 100);
+    p.push(intens[0] * intens[2] * (intens[0] + intens[1] + intens[2]) / znam / (intens[1] + intens[2]) * 100);
+    p.push(intens[0] * intens[1] / znam * 100);
+    p.push(intens[0] * intens[0] * intens[1] / znam / (intens[1] + intens[2]) * 100);
+
+    fillIntensitiesResults(index, p);
+});
+
+
+
 
 $(svgArr).each(function (index) {
     this.dblclick(function (evt) {
