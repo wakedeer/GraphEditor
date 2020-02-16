@@ -288,24 +288,31 @@ $("#calculate-performance-0").click(function () {
 
 $("#calculate-performance-1").click(function () {
     let index = "1";
-
     let {intens, hasErrors} = getIntensities(index);
+    let processFailure = $("#target-process-failure-" + index);
+    let value = processFailure.val();
+
+    if (!value || value <= 0 || value > 300) {
+        processFailure.addClass("is-invalid");
+        return;
+    }
+    processFailure.removeClass("is-invalid");
 
     if (hasErrors) {
         return;
     }
 
+    value = value / 100 * intens[0];
+
     let p = [];
-    let znam = intens[0] * (intens[0] + intens[1] + intens[2]) + intens[1] * intens[2];
-    p.push(intens[1] * intens[2] / znam * 100);
-    p.push(intens[0] * intens[2] * (intens[0] + intens[1] + intens[2]) / znam / (intens[1] + intens[2]) * 100);
-    p.push(intens[0] * intens[1] / znam * 100);
-    p.push(intens[0] * intens[0] * intens[1] / znam / (intens[1] + intens[2]) * 100);
+    let znam = (intens[0] + value + intens[1]) * intens[2] * intens[3] + value * intens[1] * (intens[2] + intens[3]);
+    p.push(value * intens[2] * intens[3] / znam * 100);
+    p.push((intens[0] + intens[1]) * intens[2] * intens[3] / znam * 100);
+    p.push(value * intens[1] * intens[3] / znam * 100);
+    p.push(value * intens[1] * intens[2] / znam * 100);
 
     fillIntensitiesResults(index, p);
 });
-
-
 
 
 $(svgArr).each(function (index) {
