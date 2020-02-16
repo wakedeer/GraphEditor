@@ -330,14 +330,12 @@ $("#calculate-performance-2").click(function () {
         return;
     }
 
-    console.log(precessFailure, identificationFailure, neutralizationFailure);
-
     let p = [];
-    let znam = (intens[0] + precessFailure + intens[1]) * intens[2] * intens[3] + precessFailure * intens[1] * (intens[2] + intens[3]);
-    p.push(precessFailure * intens[2] * intens[3] / znam * 100);
-    p.push((intens[0] + intens[1]) * intens[2] * intens[3] / znam * 100);
-    p.push(precessFailure * intens[1] * intens[3] / znam * 100);
-    p.push(precessFailure * intens[1] * intens[2] / znam * 100);
+    // let znam = (intens[0] + precessFailure + intens[1]) * intens[2] * intens[3] + precessFailure * intens[1] * (intens[2] + intens[3]) + (precessFailure + neutralizationFailure) * (intens[1] + intens[2]) * identificationFailure + (intens[0] * identificationFailure + (intens[0] + intens[1]) * neutralizationFailure) * intens[2];
+    // p.push(precessFailure * intens[2] * intens[3] / znam * 100);
+    // p.push((intens[0] + intens[1]) * intens[2] * intens[3] / znam * 100);
+    // p.push(precessFailure * intens[1] * intens[3] / znam * 100);
+    // p.push(precessFailure * intens[1] * intens[2] / znam * 100);
 
     fillIntensitiesResults(index, p);
 });
