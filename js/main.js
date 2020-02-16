@@ -286,30 +286,58 @@ $("#calculate-performance-0").click(function () {
     fillIntensitiesResults(index, p);
 });
 
+
+function getPrecessFailure(index, minValue, maxValue, inten) {
+    let value;
+    let processFailure = $("#target-process-failure-" + index);
+    value = processFailure.val();
+    if (!value || value <= minValue || value > maxValue) {
+        processFailure.addClass("is-invalid");
+        return null;
+    }
+    processFailure.removeClass("is-invalid");
+    return value / 100 * inten;
+}
+
 $("#calculate-performance-1").click(function () {
     let index = "1";
     let {intens, hasErrors} = getIntensities(index);
-    let processFailure = $("#target-process-failure-" + index);
-    let value = processFailure.val();
+    let precessFailure = getPrecessFailure("1", 0, 300, intens[0]);
 
-    if (!value || value <= 0 || value > 300) {
-        processFailure.addClass("is-invalid");
+    if (hasErrors || precessFailure == null) {
         return;
     }
-    processFailure.removeClass("is-invalid");
-
-    if (hasErrors) {
-        return;
-    }
-
-    value = value / 100 * intens[0];
 
     let p = [];
-    let znam = (intens[0] + value + intens[1]) * intens[2] * intens[3] + value * intens[1] * (intens[2] + intens[3]);
-    p.push(value * intens[2] * intens[3] / znam * 100);
+    let znam = (intens[0] + precessFailure + intens[1]) * intens[2] * intens[3] + precessFailure * intens[1] * (intens[2] + intens[3]);
+    p.push(precessFailure * intens[2] * intens[3] / znam * 100);
     p.push((intens[0] + intens[1]) * intens[2] * intens[3] / znam * 100);
-    p.push(value * intens[1] * intens[3] / znam * 100);
-    p.push(value * intens[1] * intens[2] / znam * 100);
+    p.push(precessFailure * intens[1] * intens[3] / znam * 100);
+    p.push(precessFailure * intens[1] * intens[2] / znam * 100);
+
+    fillIntensitiesResults(index, p);
+});
+
+$("#calculate-performance-2").click(function () {
+    let index = "2";
+    let {intens, hasErrors} = getIntensities(index);
+
+    let precessFailure = getPrecessFailure("2", 0, 300, intens[0]);
+    let identificationFailure = getPrecessFailure("3", 0, 300, intens[2]);
+    let neutralizationFailure = getPrecessFailure("4", 0, 300, intens[3]);
+
+    if (hasErrors || precessFailure == null || identificationFailure == null || neutralizationFailure == null) {
+        return;
+    }
+
+    console.log(precessFailure, identificationFailure, neutralizationFailure);
+
+    let p = [];
+    let znam = (intens[0] + precessFailure + intens[1]) * intens[2] * intens[3] + precessFailure * intens[1] * (intens[2] + intens[3]);
+    p.push(precessFailure * intens[2] * intens[3] / znam * 100);
+    p.push((intens[0] + intens[1]) * intens[2] * intens[3] / znam * 100);
+    p.push(precessFailure * intens[1] * intens[3] / znam * 100);
+    p.push(precessFailure * intens[1] * intens[2] / znam * 100);
 
     fillIntensitiesResults(index, p);
 });
