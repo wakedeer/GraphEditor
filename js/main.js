@@ -11,7 +11,7 @@ const svgHeight = 700;
 const svgWight = "100%";
 
 //max process range
-let PROCESS_FAILURE_MAX_VALUE = 300;
+let PROCESS_FAILURE_MAX_VALUE = 10000;
 
 //Data
 var counterArr = [-1, -1, -1, -1];
