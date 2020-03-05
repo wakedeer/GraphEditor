@@ -10,6 +10,9 @@ const TEXT_COLOR = '#000000';
 const svgHeight = 700;
 const svgWight = "100%";
 
+//max process range
+let PROCESS_FAILURE_MAX_VALUE = 300;
+
 //Data
 var counterArr = [-1, -1, -1, -1];
 var candidateNodeArr = [null, null, null, null];
@@ -321,10 +324,9 @@ function getPrecessFailure(index, minValue, maxValue, inten) {
 $("#calculate-performance-2").click(function () {
     let index = "2";
     let {intens, hasErrors} = getIntensities(index);
-
-    let precessFailure = getPrecessFailure("2", 0, 300, intens[0]);
-    let identificationFailure = getPrecessFailure("3", 0, 300, intens[2]);
-    let neutralizationFailure = getPrecessFailure("4", 0, 300, intens[3]);
+    let precessFailure = getPrecessFailure("2", 0, PROCESS_FAILURE_MAX_VALUE, intens[0]);
+    let identificationFailure = getPrecessFailure("3", 0, PROCESS_FAILURE_MAX_VALUE, intens[2]);
+    let neutralizationFailure = getPrecessFailure("4", 0, PROCESS_FAILURE_MAX_VALUE, intens[3]);
 
     if (hasErrors || precessFailure == null || identificationFailure == null || neutralizationFailure == null) {
         return;
@@ -332,10 +334,10 @@ $("#calculate-performance-2").click(function () {
 
     let p = [];
     let cisl = precessFailure * intens[3] + (precessFailure + neutralizationFailure) * identificationFailure;
-    let znam = (intens[1] + intens[2]) * cisl + intens[2] * ((intens[0] + intens[1]) * (intens[3] +neutralizationFailure) + intens[0] * identificationFailure + precessFailure * intens[1]);
+    let znam = (intens[1] + intens[2]) * cisl + intens[2] * ((intens[0] + intens[1]) * (intens[3] + neutralizationFailure) + intens[0] * identificationFailure + precessFailure * intens[1]);
 
     p.push(intens[2] * cisl / znam * 100);
-    p.push(intens[2] * ((intens[0] + intens[1]) * intens[3] + intens[0] * identificationFailure)/ znam * 100);
+    p.push(intens[2] * ((intens[0] + intens[1]) * intens[3] + intens[0] * identificationFailure) / znam * 100);
     p.push(intens[1] * cisl / znam * 100);
     p.push(intens[2] * ((intens[0] + intens[1]) * neutralizationFailure + precessFailure * intens[1]) / znam * 100);
 
