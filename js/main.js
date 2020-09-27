@@ -302,25 +302,6 @@ function getPrecessFailure(index, minValue, maxValue, inten) {
     return value / 100 * inten;
 }
 
-// $("#calculate-performance-1").click(function () {
-//     let index = "1";
-//     let {intens, hasErrors} = getIntensities(index);
-//     let precessFailure = getPrecessFailure("1", 0, 300, intens[0]);
-//
-//     if (hasErrors || precessFailure == null) {
-//         return;
-//     }
-//
-//     let p = [];
-//     let znam = (intens[0] + precessFailure + intens[1]) * intens[2] * intens[3] + precessFailure * intens[1] * (intens[2] + intens[3]);
-//     p.push(precessFailure * intens[2] * intens[3] / znam * 100);
-//     p.push((intens[0] + intens[1]) * intens[2] * intens[3] / znam * 100);
-//     p.push(precessFailure * intens[1] * intens[3] / znam * 100);
-//     p.push(precessFailure * intens[1] * intens[2] / znam * 100);
-//
-//     fillIntensitiesResults(index, p);
-// });
-
 $("#calculate-performance-2").click(function () {
     let index = "2";
     let {intens, hasErrors} = getIntensities(index);
