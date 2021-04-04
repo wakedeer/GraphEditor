@@ -341,7 +341,7 @@ $(svgArr).each(function (index) {
         drawNodeElements(node, currentNodeNumber);
 
         node.on('contextmenu', function () {
-            let nodeNumber = $(this.node).find('text').html();
+            let nodeNumber = parseInt($(this.node).find('text').html());
             this.remove();
             worksArr[index] = $.grep(worksArr[index], removeNeighborsWorks(nodeNumber));
 
