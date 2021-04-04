@@ -363,7 +363,7 @@ $(svgArr).each(function (index) {
                 let works = worksArr[index];
                 let isAlreadyExist = findDuplicated(works, previousValue, currentValue);
 
-                if (currentValue < previousValue) {
+                if (parseInt(currentValue) < parseInt(previousValue)) {
                     showAlert("Переход из большего в меньшее не возможен!", "alert-danger", index);
                 } else if (isAlreadyExist) {
                     showAlert("Дублирующий переход из состояния " + previousValue + " в состояние " + currentValue + " не возможен!", "alert-danger", index);
